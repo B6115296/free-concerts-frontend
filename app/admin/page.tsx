@@ -16,105 +16,105 @@ interface Concert {
   createdAt: string;
 }
 
+interface SeatSummary {
+  totalSeats: number;
+  reservedSeats: number;
+  cancelledSeats: number;
+}
+
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("overview");
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
+
+  const [stats, setStats] = useState<SeatSummary>({
     totalSeats: 0,
     reservedSeats: 0,
-    cancelledSeats: 0
+    cancelledSeats: 0,
   });
 
   useEffect(() => {
-    const fetchConcerts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get("/admin/concerts");
-        setConcerts(response.data);
+        const concertsRes = await api.get("/admin/concerts");
+        const statsRes = await api.get("/admin/concerts/seats-summary");
 
-        // Calculate stats
-        const totalSeats = response.data.reduce((sum: number, concert: Concert) => sum + concert.totalSeats, 0);
-        const reservedSeats = response.data.reduce((sum: number, concert: Concert) => sum + (concert.totalSeats - concert.availableSeats), 0);
-        const cancelledSeats = 0; // This would come from API if available
-
-        setStats({
-          totalSeats,
-          reservedSeats,
-          cancelledSeats
-        });
+        setConcerts(concertsRes.data);
+        setStats(statsRes.data); // 👈 ใช้ค่าจาก API ตรงๆ
       } catch (error) {
-        console.error("Failed to fetch concerts:", error);
+        console.error("Failed to fetch admin data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchConcerts();
+    fetchData();
   }, []);
 
   const handleDeleteConcert = async (concertId: number) => {
     try {
       await api.delete(`/admin/concerts/${concertId}`);
-      setConcerts(concerts.filter(concert => concert.id !== concertId));
+      setConcerts(concerts.filter((concert) => concert.id !== concertId));
     } catch (error) {
       console.error("Failed to delete concert:", error);
     }
   };
 
   return (
-    <div className="flex flex-col h-full px-4 py-6 pt-[76px] sm:px-6 sm:py-10 sm:pt-[76px] lg:px-10 lg:py-16 lg:pt-16 bg-[#FBFBFB]">
+    <div className="flex flex-col h-full px-4 py-6 pt-[64px] bg-[#FBFBFB]">
 
-      {/* Header */}
-      <div className="mb-8 lg:mb-12">
-        {/* Stats Boxes */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[35px]">
-          <StatsBox
-            title="Total of seats"
-            value={stats.totalSeats}
-            color="blue"
-            bgColor="#0070A4"
-            icon={<FiUser className="size-[32px] lg:size-[40px] text-white" />}
-          />
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 
-          <StatsBox
-            title="Reserve"
-            value={stats.reservedSeats}
-            color="green"
-            bgColor="#00A58B"
-            icon={<FiAward className="size-[32px] lg:size-[40px] text-white" />}
-          />
+        <StatsBox
+          title="Total of seats"
+          value={stats.totalSeats}
+          color="blue"
+          bgColor="#0070A4"
+          icon={<FiUser className="size-[32px] text-white" />}
+        />
 
-          <StatsBox
-            title="Cancel"
-            value={stats.cancelledSeats}
-            color="red"
-            bgColor="#FF6B6B"
-            icon={<MdOutlineCancel className="size-[32px] lg:size-[40px] text-white" />}
-          />
-        </div>
+        <StatsBox
+          title="Reserve"
+          value={stats.reservedSeats}
+          color="green"
+          bgColor="#00A58B"
+          icon={<FiAward className="size-[32px] text-white" />}
+        />
+
+        <StatsBox
+          title="Cancel"
+          value={stats.cancelledSeats}
+          color="red"
+          bgColor="#FF6B6B"
+          icon={<MdOutlineCancel className="size-[32px] text-white" />}
+        />
+
       </div>
 
-      {/* Top Tab Bar */}
-      <div className="flex gap-4 sm:gap-6 mb-6 lg:mb-[22px] border-b border-[#C2C2C2] overflow-x-auto">
+      {/* Tabs */}
+      <div className="flex gap-6 mb-6 border-b border-[#C2C2C2]">
+
         <button
           onClick={() => setActiveTab("overview")}
-          className={`text-lg sm:text-xl lg:text-2xl py-[10px] px-3 sm:px-4 transition-colors whitespace-nowrap ${activeTab === "overview"
-            ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC]"
-            : "font-normal text-[#5C5C5C] hover:text-[#1692EC]"
-            }`}
+          className={activeTab === "overview"
+            ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC] py-[10px]"
+            : "text-[#5C5C5C] py-[10px]"
+          }
         >
           Overview
         </button>
 
         <button
           onClick={() => setActiveTab("create")}
-          className={`text-lg sm:text-xl lg:text-2xl py-[10px] px-3 sm:px-4 transition-colors whitespace-nowrap ${activeTab === "create"
-            ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC]"
-            : "font-normal text-[#5C5C5C] hover:text-[#1692EC]"
-            }`}
+          className={activeTab === "create"
+            ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC] py-[10px]"
+            : "text-[#5C5C5C] py-[10px]"
+          }
         >
           Create
         </button>
+
       </div>
 
       {/* Content Area */}
