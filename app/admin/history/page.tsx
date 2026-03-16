@@ -1,43 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import HistoryTable from "../../components/HistoryTable";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import api from "../../utils/api";
+import { useHistory } from "../../../hooks/useHistory";
 
-export default function History() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch reservations:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchReservations();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="h-full flex flex-col">
-        <div className="flex-1 p-4 sm:p-6 lg:p-10 pt-[76px] sm:pt-[76px] lg:pt-16 bg-[#FBFBFB] overflow-y-auto">
-          <LoadingSpinner message="Loading reservation history..." />
-        </div>
-      </div>
-    );
-  }
+export default function HistoryPage() {
+  const { loading } = useHistory();
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 p-4 sm:p-6 lg:p-10 pt-[76px] sm:pt-[76px] lg:pt-16 bg-[#FBFBFB] overflow-y-auto">
-        <div className="max-w-full">
+    <div className="flex flex-col h-full px-4 py-6 pt-[64px] bg-[#FBFBFB]">
+      <div className="flex-1 overflow-auto">
+        {loading ? (
+          <LoadingSpinner message="Loading history..." />
+        ) : (
           <HistoryTable />
-        </div>
+        )}
       </div>
     </div>
   );

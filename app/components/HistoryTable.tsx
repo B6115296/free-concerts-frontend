@@ -1,47 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import api from "../utils/api";
 import { Inter } from "next/font/google";
+import { useHistory } from "../../hooks/useHistory";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
 
-interface Reservation {
-  id: number;
-  username: string;
-  concertName: string;
-  concertDate: string;
-  status: "reserved" | "cancelled";
-  createdAt: string;
-}
-
 export default function HistoryTable() {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { reservations, loading } = useHistory();
 
   const headerClass =
     "h-[40px] md:h-[50px] px-[8px] md:px-[12px] py-[6px] md:py-[10px] text-[14px] md:text-[20px] text-black font-medium text-left border-r border-[#5B5B5B]";
 
   const cellClass =
     "h-[36px] md:h-[44px] px-[8px] md:px-[12px] py-[6px] md:py-[10px] text-[12px] md:text-[14px] text-black whitespace-nowrap border-r border-[#5B5B5B]";
-
-  useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        const response = await api.get("/reservation-history");
-        setReservations(response.data);
-      } catch (error) {
-        console.error("Failed to fetch reservation history:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReservations();
-  }, []);
 
   if (loading) {
     return (
@@ -67,7 +41,7 @@ export default function HistoryTable() {
             <th className={headerClass}>Date Time</th>
             <th className={headerClass}>Username</th>
             <th className={headerClass}>Concert Name</th>
-            <th className={headerClass}>Action</th>
+            <th className={headerClass}>Status</th>
           </tr>
         </thead>
 

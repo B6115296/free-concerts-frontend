@@ -1,5 +1,6 @@
 import React from "react";
-import { FiSave, FiUsers } from "react-icons/fi";
+import { FiAward, FiSave, FiUser, FiUsers } from "react-icons/fi";
+import "./../styles/concert-form.css";
 
 interface ConcertFormData {
   concertName: string;
@@ -23,25 +24,25 @@ export default function ConcertForm({
   onSave
 }: ConcertFormProps) {
   return (
-    <div className="w-full">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6 lg:p-10">
+    <div className="form-container">
+      <div className="form-card">
 
-        <div className="space-y-6">
+        <div className="form-content">
 
           {/* Title */}
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[#1692EC]">
+          <h2 className="form-title">
             Create
           </h2>
 
           {/* Divider */}
-          <div className="border-b border-gray-300"></div>
+          <div className="form-divider"></div>
 
           {/* Row: Concert Name + Total Seats */}
-          <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1">
+          <div className="form-row">
 
             {/* Concert Name */}
-            <div className="flex flex-col">
-              <label className="text-[24px] max-sm:text-lg font-medium text-black mb-4">
+            <div className="form-field">
+              <label className="form-label">
                 Concert Name
               </label>
 
@@ -50,50 +51,41 @@ export default function ConcertForm({
                 name="concertName"
                 value={formData.concertName}
                 onChange={onInputChange}
-                placeholder="Please input concert name"
-                className={`h-[48px] px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.concertName ? "border-red-500" : "border-gray-300"
-                  }`}
+                placeholder="Enter concert name"
+                className={`form-input ${errors.concertName ? "error" : ""}`}
               />
-
               {errors.concertName && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.concertName}
-                </p>
+                <span className="form-error">{errors.concertName}</span>
               )}
             </div>
 
             {/* Total Seats */}
-            <div className="flex flex-col">
-              <label className="text-[24px] max-sm:text-lg font-medium text-black mb-4">
-                Total of Seats
+            <div className="form-field">
+              <label className="form-label">
+                Total Seats
               </label>
 
-              <div className="relative">
+              <div className="form-input-wrapper">
                 <input
                   type="text"
-                  inputMode="numeric"
                   name="totalSeats"
                   value={formData.totalSeats}
                   onChange={onInputChange}
-                  placeholder="Please input total of seats"
-                  className={`h-[48px] w-full px-4 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.totalSeats ? "border-red-500" : "border-gray-300"
-                    }`}
+                  placeholder="Enter total seats"
+                  className={`form-input ${errors.totalSeats ? "error" : ""}`}
                 />
-
-                <FiUsers className="absolute right-3 top-1/2 -translate-y-1/2 text-black text-[20px] pointer-events-none" />
+                <FiUser className="form-input-icon" />
               </div>
-
               {errors.totalSeats && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.totalSeats}
-                </p>
+                <span className="form-error">{errors.totalSeats}</span>
               )}
             </div>
+
           </div>
 
           {/* Description */}
-          <div className="flex flex-col">
-            <label className="text-[24px] max-sm:text-lg font-medium text-black mb-4">
+          <div className="form-field">
+            <label className="form-label">
               Description
             </label>
 
@@ -101,31 +93,38 @@ export default function ConcertForm({
               name="description"
               value={formData.description}
               onChange={onInputChange}
-              placeholder="Please input description"
-              className={`h-[102px] px-4 py-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.description ? "border-red-500" : "border-gray-300"
-                }`}
+              placeholder="Enter concert description"
+              className={`form-textarea ${errors.description ? "error" : ""}`}
+              rows={4}
             />
-
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.description}
-              </p>
+              <span className="form-error">{errors.description}</span>
             )}
           </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end pt-2">
+          {/* Submit Button */}
+          <div className="form-actions">
             <button
               onClick={onSave}
               disabled={loading}
-              className="flex items-center justify-center gap-2 w-[160px] max-sm:w-full h-[60px] bg-[#1692EC] text-white text-lg font-medium rounded-lg hover:bg-[#1692EC]/80 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="form-submit-btn"
             >
-              {!loading && <FiSave className="text-[22px]" />}
-              {loading ? "Saving..." : "Save"}
+              {loading ? (
+                <>
+                  <FiSave className="inline-block mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <FiSave className="inline-block mr-2" />
+                  Save
+                </>
+              )}
             </button>
           </div>
 
         </div>
+
       </div>
     </div>
   );

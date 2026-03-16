@@ -1,5 +1,6 @@
 import { FiUser } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
+import "./../styles/concert-card.css";
 
 interface Concert {
   id: string;
@@ -31,37 +32,37 @@ export default function ConcertCard({
   const isSoldOut = concert.availableSeats === 0;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6 lg:p-10 max-w-full overflow-hidden">
+    <div className="card-custom bg-white border border-gray-200 p-4 sm:p-6 lg:p-10 max-w-full overflow-hidden">
       <div className="flex flex-col">
 
         {/* Title */}
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[#1692EC] break-words max-w-full">
+        <h2 className="card-title">
           {concert.name}
         </h2>
 
         {/* Divider */}
-        <div className="border-b border-gray-300 my-4 sm:my-6"></div>
+        <div className="card-divider"></div>
 
         {/* Description */}
-        <p className="text-black text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed break-words line-clamp-3">
+        <p className="card-description">
           {concert.description}
         </p>
 
         {/* Footer */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:justify-between sm:items-center sm:h-[60px]">
+        <div className="card-footer">
 
           {/* Left Info */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="card-left-info">
 
             {!isAdmin && isSoldOut && (
-              <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+              <span className="sold-out-badge">
                 Sold Out
               </span>
             )}
 
             {isAdmin && (
-              <span className="text-black text-lg sm:text-xl lg:text-2xl font-medium flex items-center">
-                <FiUser className="size-[20px] sm:size-[24px] mr-2" />
+              <span className="admin-seats-info">
+                <FiUser className="admin-seats-icon" />
                 {concert.totalSeats}
               </span>
             )}
@@ -76,7 +77,7 @@ export default function ConcertCard({
                 {isSoldOut ? (
                   <button
                     disabled
-                    className="sm:text-lg lg:text-2xl w-full sm:w-[160px] sm:h-full bg-gray-300 text-gray-600 px-4 py-2 rounded cursor-not-allowed break-words"
+                    className="reserve-btn w-full sm:w-[160px] sm:h-full bg-gray-300 text-gray-600 cursor-not-allowed"
                   >
                     Sold Out
                   </button>
@@ -86,14 +87,14 @@ export default function ConcertCard({
                       concert.reservationId &&
                       onCancel?.(concert.reservationId)
                     }
-                    className=" sm:text-lg lg:text-2xl w-full sm:w-[160px] sm:h-full bg-[#E84E4E] text-white px-4 py-2 rounded hover:bg-red-600 transition break-words"
+                    className="cancel-btn w-full sm:w-[160px] sm:h-full"
                   >
                     Cancel
                   </button>
                 ) : (
                   <button
                     onClick={() => onReserve?.(concert.id)}
-                    className="sm:text-lg lg:text-2xl w-full sm:w-[160px] sm:h-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition break-words"
+                    className="reserve-btn w-full sm:w-[160px] sm:h-full"
                   >
                     Reserve
                   </button>
@@ -104,9 +105,9 @@ export default function ConcertCard({
             {isAdmin && (
               <button
                 onClick={() => onDelete?.(concert.id)}
-                className="sm:text-lg lg:text-2xl w-full sm:w-[160px] sm:h-full bg-[#E84E4E] text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-red-600 transition break-words"
+                className="delete-btn w-full sm:w-[160px] sm:h-full"
               >
-                <RiDeleteBinLine className="size-[20px] sm:size-[24px]" />
+                <RiDeleteBinLine className="delete-icon" />
                 Delete
               </button>
             )}
