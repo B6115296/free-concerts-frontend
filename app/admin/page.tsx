@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from "react";
 import ConcertCard from "../components/ConcertCard";
-import api from "../utils/api";
+import ConfirmModal from "../components/ConfirmModal";
+import Toast from "../components/Toast";
 import StatsBox from "../components/StatsBox";
+import LoadingSpinner from "../components/LoadingSpinner";
+import api from "../utils/api";
+
 import { FiAward, FiUser } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 
@@ -23,6 +27,7 @@ interface SeatSummary {
 }
 
 export default function Admin() {
+
   const [activeTab, setActiveTab] = useState("overview");
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +38,16 @@ export default function Admin() {
     cancelledSeats: 0,
   });
 
+  const [toast, setToast] = useState({
+    show: false,
+    type: "success" as "success" | "error",
+    message: "",
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedConcert, setSelectedConcert] = useState<Concert | null>(null);
+
+  // fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,7 +55,7 @@ export default function Admin() {
         const statsRes = await api.get("/admin/concerts/seats-summary");
 
         setConcerts(concertsRes.data);
-        setStats(statsRes.data); // 👈 ใช้ค่าจาก API ตรงๆ
+        setStats(statsRes.data);
       } catch (error) {
         console.error("Failed to fetch admin data:", error);
       } finally {
@@ -51,13 +66,33 @@ export default function Admin() {
     fetchData();
   }, []);
 
-  const handleDeleteConcert = async (concertId: number) => {
+  // delete concert
+  const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/admin/concerts/${concertId}`);
-      setConcerts(concerts.filter((concert) => concert.id !== concertId));
+      await api.delete(`/admin/concerts/${id}`);
+
+      setConcerts((prev) =>
+        prev.filter((concert) => concert.id.toString() !== id)
+      );
+
+      setToast({
+        show: true,
+        type: "success",
+        message: "Concert deleted successfully",
+      });
+
     } catch (error) {
-      console.error("Failed to delete concert:", error);
+
+      setToast({
+        show: true,
+        type: "error",
+        message: "Failed to delete concert",
+      });
     }
+
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
   };
 
   return (
@@ -97,9 +132,10 @@ export default function Admin() {
 
         <button
           onClick={() => setActiveTab("overview")}
-          className={activeTab === "overview"
-            ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC] py-[10px]"
-            : "text-[#5C5C5C] py-[10px]"
+          className={
+            activeTab === "overview"
+              ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC] py-[10px]"
+              : "text-[#5C5C5C] py-[10px]"
           }
         >
           Overview
@@ -107,9 +143,10 @@ export default function Admin() {
 
         <button
           onClick={() => setActiveTab("create")}
-          className={activeTab === "create"
-            ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC] py-[10px]"
-            : "text-[#5C5C5C] py-[10px]"
+          className={
+            activeTab === "create"
+              ? "font-semibold text-[#1692EC] border-b-2 border-[#1692EC] py-[10px]"
+              : "text-[#5C5C5C] py-[10px]"
           }
         >
           Create
@@ -117,14 +154,12 @@ export default function Admin() {
 
       </div>
 
-      {/* Content Area */}
+      {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === "overview" && (
           <div>
             {loading ? (
-              <div className="text-center py-8">
-                <p className="text-gray-600">Loading concerts...</p>
-              </div>
+              <LoadingSpinner message="Loading concerts..." />
             ) : concerts.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-600">No concerts found</p>
@@ -135,18 +170,36 @@ export default function Admin() {
                   <ConcertCard
                     key={concert.id}
                     concert={{
-                      ...concert,
-                      availableSeats: concert.totalSeats,
-                      reservedSeats: 0,
-                      cancelledSeats: 0
+                      id: concert.id.toString(),
+                      name: concert.name,
+                      description: concert.description,
+                      totalSeats: concert.totalSeats,
+                      availableSeats: concert.availableSeats,
+                      reserved: false,
                     }}
                     isAdmin={true}
-                    onDelete={handleDeleteConcert}
+                    onDelete={(concertId) => {
+
+                      const found = concerts.find(
+                        (c) => c.id.toString() === concertId
+                      );
+
+                      if (found) {
+                        setSelectedConcert(found);
+                        setShowModal(true);
+                      }
+
+                    }}
                   />
+
                 ))}
+
               </div>
+
             )}
+
           </div>
+
         )}
 
         {activeTab === "create" && (
@@ -154,7 +207,29 @@ export default function Admin() {
             Create
           </div>
         )}
+
       </div>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        show={showModal}
+        concertName={selectedConcert?.name || ""}
+        onCancel={() => setShowModal(false)}
+        onConfirm={() => {
+          if (selectedConcert) {
+            handleDelete(selectedConcert.id.toString());
+          }
+          setShowModal(false);
+        }}
+      />
+
+      {/* Toast */}
+      <Toast
+        show={toast.show}
+        type={toast.type}
+        message={toast.message}
+      />
+
     </div>
   );
 }

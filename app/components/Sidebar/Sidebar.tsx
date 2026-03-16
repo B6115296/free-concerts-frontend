@@ -16,9 +16,13 @@ export default function SideBar() {
     const newMode = mode === "admin" ? "user" : "admin";
     setMode(newMode);
 
-    router.push(newMode === "admin" ? "/admin" : "/");
+    router.push(newMode === "admin" ? "/admin" : "/user");
 
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    handleModeSwitch();
   };
 
   return (
@@ -68,7 +72,10 @@ export default function SideBar() {
           />
 
           <div className="px-2">
-            <button className="text-2xl flex items-center gap-[10px] w-full h-16 px-2 rounded-lg hover:bg-[#EAF5F9] transition-colors">
+            <button 
+              onClick={handleLogout}
+              className="text-2xl flex items-center gap-[10px] w-full h-16 px-2 rounded-lg hover:bg-[#EAF5F9] transition-colors"
+            >
               <FiLogOut size={24} />
               Logout
             </button>

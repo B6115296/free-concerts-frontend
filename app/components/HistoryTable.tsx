@@ -23,10 +23,10 @@ export default function HistoryTable() {
   const [loading, setLoading] = useState(true);
 
   const headerClass =
-    "h-[50px] px-[12px] py-[10px] text-[20px] text-black font-medium text-left border-r border-[#5B5B5B]";
+    "h-[40px] md:h-[50px] px-[8px] md:px-[12px] py-[6px] md:py-[10px] text-[14px] md:text-[20px] text-black font-medium text-left border-r border-[#5B5B5B]";
 
   const cellClass =
-    "h-[44px] px-[12px] py-[10px] text-[14px] text-black whitespace-nowrap border-r border-[#5B5B5B]";
+    "h-[36px] md:h-[44px] px-[8px] md:px-[12px] py-[6px] md:py-[10px] text-[12px] md:text-[14px] text-black whitespace-nowrap border-r border-[#5B5B5B]";
 
   useEffect(() => {
     const fetchReservations = async () => {

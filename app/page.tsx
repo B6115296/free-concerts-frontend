@@ -1,7 +1,15 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Home() {
-  return (
-    <div className="flex flex-col h-screen">
-      <h1>Free Concerts</h1>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to admin page as landing
+    router.push("/admin");
+  }, [router]);
+
+  return null;
 }
