@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import HistoryTable from "../../components/HistoryTable";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import api from "../../utils/api";
 
 export default function History() {
   const [loading, setLoading] = useState(true);

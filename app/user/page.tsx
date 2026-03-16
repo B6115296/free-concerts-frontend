@@ -51,7 +51,7 @@ export default function UserPage() {
 
       setConcerts(res.data);
     } catch (error) {
-      console.error("Error fetching concert:", error);
+      console.error("Error fetching concerts:", error);
 
       const errorMessage =
         axios.isAxiosError(error) && error.response?.data?.message
