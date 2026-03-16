@@ -36,7 +36,7 @@ export default function SidebarItem({
       onClick={onClick}
       className={`${base} w-full text-left hover:bg-[#EAF5F9]`}
     >
-      <Icon size={24} />
+      <Icon size={22} />
       {label}
     </button>
   );
